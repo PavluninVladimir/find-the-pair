@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Types from 'prop-types';
 import { BrowserRouter, StaticRouter, Switch, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import FormLoginAdmin from './components/form-login-admin/form-login-admin';
+import PlayingField from './components/playing-field';
 import store from './store';
 
 class App extends Component {
@@ -10,13 +10,13 @@ class App extends Component {
         url: Types.string
     }
     render() {
-        const component = FormLoginAdmin
+        const component = PlayingField
         if (typeof window === 'undefined') {
             return (
                 <Provider store={ store }>
                     <StaticRouter location={ this.props.url } context={ {} }>
                         <Switch>
-                            <Route exact path='/logon' component={ component }/>
+                            <Route exact path='/' component={ component }/>
                         </Switch>
                     </StaticRouter>
                 </Provider>)
@@ -26,7 +26,7 @@ class App extends Component {
                 <Provider store={ store }>
                     <BrowserRouter>
                         <Switch>
-                            <Route exact path='/logon' component={ component }/>
+                            <Route exact path='/' component={ component }/>
                         </Switch>
                     </BrowserRouter>
                 </Provider>)
