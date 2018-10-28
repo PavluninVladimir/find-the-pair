@@ -1,5 +1,6 @@
-import { Component } from 'react';
-import uuid4 from 'uuid/v4';
+import /* webpackPreload: true */  { Component } from 'react';
+import /* webpackPreload: true */ { connect } from 'react-redux';
+import /* webpackPreload: true */  uuid4 from 'uuid/v4';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
@@ -9,19 +10,31 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import InputLabel from '@material-ui/core/InputLabel';
 import style from './playing-field.scss';
-import pic from '../files/img/di-IUZQY3.png';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
+import {
+    getImg
+} from '../actions/get-img';
+import {
+    generate,
+    clearIdCell,
+    isPair,
+    imgView,
+    imgHide,
+    gameOver
+} from '../actions/generate-field';
 
 
 class PlayingField extends Component {
 
-    imgToForm = (width) => {
-        let key = uuid4();
+    imgToForm = (options) => {
+        const { count, key, img } = options;
         return (<img
             key={key}
-            src={pic}
-            style={{ 'width': `${100 / width}%` }}
+            data-key={key}
+            src={img}
+            onClick={this.imgOnClick}
+            style={{ 'width': `${100 / count}%` }}
         />)
     }
 
@@ -36,37 +49,65 @@ class PlayingField extends Component {
 
     handleChange = event => {
         let count = event.target.value;
-        let rowImg = () => this.generateRow(this.imgToForm, count).map(
-            element => element(count)
-        )
-        let fieldPlay = this.generateRow(this.paperToForm, count).map(
-            (element) => element(rowImg()));
-        this.setState({ [event.target.name]: event.target.value, fieldPlay });
+        let countImg = (count*count)/2
+        this.props.clearIdCell();
+        this.setState({
+            ...this.state,
+            [event.target.name]: count,
+            sizeField: count
+        });
+        this.props.generate({
+            init: true,
+            count,
+            cell: this.imgToForm,
+            row: this.paperToForm
+        })
+        this.props.getImg(countImg);
     };
 
-    generateRow = (elements, count) => {
-        if (count === 1) {
-            return elements;
+    imgOnClick = event => {
+        if (!this.props.pair || event.target.dataset.key
+            !== this.props.pair.dataset.key) {
+            let res = this.props.isPair(event.target);
+            event.target.src = this.props.imgView(event.target.dataset.key);
+
+            if (res) {
+                let img = event;
+                setTimeout((event, props) => {
+                    event.remove();
+                    props.pair.remove();
+                }, 100, img.target, this.props)
+            }
+
+            if (!res && res !== undefined) {
+                let img = event;
+                setTimeout((event, props) => {
+                    props.pair.src = props.imgHide();
+                    event.src = props.imgHide();
+                }, 500, img.target, this.props)
+            }
         }
-        return [].concat(elements, this.generateRow(elements, count - 1));
-    };
+    }
 
     constructor(props) {
         super(props);
+        this.imgOnClick = this.imgOnClick.bind(this);
+        this.getImg = this.props.getImg.bind(this);
         this.state = {
-            age: '',
-            name: 'hai',
-            fieldPlay: '',
-            loader: true
+            countImg: 0,
+            loader: true,
+            isTimer1: false,
+            isTimer2: false,
         };
     }
 
     componentDidMount = () => {
-        this.setState({...this.state, loader: false});
+        this.setState({ ...this.state, loader: false });
     }
-
     render() {
         let linearProgress = (<LinearProgress />)
+        let text1 = `На запоминание картинок остается ${5-this.state.timerv} сек!`
+        let text2 = `У вас осталось ${30-this.state.timerv} сек!`
         let component = (
             <div>
                 <Paper elevation={2} className={style.paper}>
@@ -90,23 +131,81 @@ class PlayingField extends Component {
                         </Select>
                     </FormControl>
                     <FormControl className={style.buttonStart}>
-                        <Button variant="contained" color="primary" size='small'>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            size='small'
+                            onClick={() => {
+                                let i = 0;
+                                this.props.generate({
+                                    count: this.state.sizeField,
+                                    cell: this.imgToForm,
+                                    row: this.paperToForm,
+                                    show: true
+                                })
+                                let s = setInterval(() => {
+                                    i++;
+                                    if (i === 6) {
+                                        this.props.generate({
+                                            count: this.state.sizeField,
+                                            cell: this.imgToForm,
+                                            row: this.paperToForm,
+                                            show: false
+                                        })
+                                        clearInterval(s);
+                                    }
+                                }, 1000);
+                                this.setState({...this.state, isTimer1: false});
+                                let j = 0;
+                                let n = setInterval(() => {
+                                    this.setState({...this.state, timerv: j, isTimer2: true});
+                                    j++;
+                                    if (j === 29) {
+                                        this.props.gameOver()
+                                        clearInterval(n);
+                                    }
+                                }, 1000);
+                                this.setState({...this.state, isTimer2: false});
+                            }}
+                        >
                             Start
                         </Button>
                     </FormControl>
+                    <FormControl className={style.timerText}>
+                        <Typography variant="h5">
+                            {this.state.isTimer2 && text2}
+                        </Typography>
+                    </FormControl>
                 </Paper>
                 <div className={style.paperListImg}>
-                    {this.state.fieldPlay}
+                    {this.props.fields}
                 </div>
             </div>
         );
         return (
             <div>
                 {this.state.loader && linearProgress}
-                {!this.state.loader &&  component}
+                {!this.state.loader && component}
             </div>
         )
     }
 }
 
-export default PlayingField;
+export default connect(
+    (state) => {
+        return {
+            pictures: state.getImg,
+            fields: state.generate.fields,
+            pair: state.generate.pair
+        }
+    },
+    {
+        clearIdCell,
+        getImg,
+        generate,
+        isPair,
+        imgView,
+        imgHide,
+        gameOver
+    }
+)(PlayingField);

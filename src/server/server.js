@@ -4,8 +4,9 @@ import fs from 'fs';
 import { renderToString } from 'react-dom/server';
 import App from '../app/app'
 import pluginInit from './plugins/pluginsInit';
+import images from './pictures/111.jpg';
 const isLocal = process.env.NODE_ENV === 'development';
-const host =  isLocal ? 'localhost' : 'myinfantmain'
+const host = isLocal ? 'localhost' : 'localhost'
 const server = Hapi.server({
     port: 3001,
     host
@@ -26,6 +27,14 @@ const init = async () => {
         path: '/{path*}',
         handler: async (request, h) => {
             return await loadHtml(request.path)
+        }
+    });
+    await server.route({
+        method: 'GET',
+        path: '/img',
+        handler: (request, h) => {
+
+            return `<img src="${images}" />`
         }
     });
     await server.route({

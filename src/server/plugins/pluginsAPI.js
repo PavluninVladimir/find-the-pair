@@ -1,22 +1,17 @@
 'use strict';
+import getImg from '../util/list-img';
 
 const pluginFetchAPI = {
     name: 'fetchAPI',
     version: '0.1.0',
     register: async function (server, options) {
-
-        // Create a route for example
-
         server.route({
-            method: 'POST',
+            method: 'GET',
             path: options.url,
             handler: function (request, h) {
-                return h.response('hello, world').code(401);
+                return h.response(getImg(Number(request.params.count)));
             }
         });
-
-        // etc ...
-        // await someAsyncMethods();
     }
 };
 

@@ -5,7 +5,7 @@ import PluginsAPI from './pluginsAPI';
 const pluginsInit = function() {
     return [
         { plugin: inert },
-        { plugin: PluginsAPI, options: {url: '/api/v1/login'} }
+        { plugin: PluginsAPI, options: {url: '/api/v1/getimg/{count}'} }
     ]
 }
 

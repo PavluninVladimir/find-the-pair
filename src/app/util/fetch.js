@@ -1,12 +1,9 @@
 import axios from 'axios';
 
-const fetchAPI = (function fetchAPI() {
+const fetchAPI = (url) => {
     return {
         GET: function () {
-            return axios.get('/api/v1/login', {
-                params: {
-                    ID: 12345
-                }
+            return axios.get(url, {
             })
                 .then(function (response) {
                     return response;
@@ -14,18 +11,8 @@ const fetchAPI = (function fetchAPI() {
                 .catch((err) => {
                     return err;
                 })
-        },
-        post: () => {
-            return axios.post('/api/v1/login')
-                .then(function (response) {
-                    return Promise.resolve(response);
-                })
-                .catch((err) => {
-                    return Promise.reject(err);
-                })
-
         }
     }
-})();
+};
 
 export default fetchAPI;
