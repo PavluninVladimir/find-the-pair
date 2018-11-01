@@ -1,6 +1,6 @@
 {
   "name": "find-the-pair",
-  "version": "v0.0.1",
+  "version": "v0.1.0",
   "description": "Find the Pair",
   "main": "./src/app/app.jsx",
   "author": "PavluninVV",
