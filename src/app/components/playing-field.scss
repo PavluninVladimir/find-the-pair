@@ -1,0 +1,27 @@
+.paper {
+    margin: 5px 0px;
+    padding: 5px;
+
+    .selectComplexity {
+        width: 50%;
+
+        .outlinedInput {
+            padding: 0;
+        }
+    }
+
+    .buttonStart {
+        vertical-align: bottom;
+    }
+    
+    .timerText{
+        display: block;
+    }
+}
+
+.paperListImg {
+    text-align: center;
+    margin: 0 auto;
+    flex-grow: 1;
+    // max-width: 410px;
+}
