@@ -8,13 +8,16 @@ stages:
   - deploy
 install_job:
   stage: install
+  cache:
+    paths:
+      - node_modules
   script:
     - npm install
 test_job:
   stage: test
+  cache:
+    paths:
+      - node_modules
   script:
     - npm run jest
-job1:
-  script: rspec
-  coverage: './coverage/
-  
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
