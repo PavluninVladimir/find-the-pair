@@ -6,7 +6,15 @@ stages:
   - install
   - test
   - deploy
-install:
+install_job:
   stage: install
   script:
     - npm install
+test_job:
+  stage: test
+  script:
+    - npm run jest
+job1:
+  script: rspec
+  coverage: './coverage/
+  
