@@ -1,4 +1,5 @@
 {
+    "reporters": [ "default", "jest-junit" ],
     "setupFiles": [
         "./__test__/global.js"
     ],
