@@ -7,6 +7,8 @@ stages:
   - test
   - deploy
 install_job:
+  only:
+    - tags
   stage: install
   cache:
     paths:
@@ -14,6 +16,8 @@ install_job:
   script:
     - npm install
 test_job:
+  only:
+    - tags
   stage: test
   cache:
     paths:
@@ -21,3 +25,9 @@ test_job:
   script:
     - npm run jest
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+deploy_job:
+  only:
+    - tags
+  stage: deploy
+  script:
+    - docker build -t find-the-pair:CI_COMMIT_TAG. .
