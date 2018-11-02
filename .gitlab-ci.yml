@@ -29,6 +29,9 @@ test_job:
   script:
     - npm run jest
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  artifacts:
+    reports:
+      junit: ./coverage/clover.xml
 deploy_job:
   image: docker:stable
   services:
