@@ -1,11 +1,12 @@
+image: node:10.12.0-jessie
 variables:
   GIT_STRATEGY: fetch
   Timeout: 10
 stages:
-  - build
+  - install
   - test
   - deploy
-build_job:
-  stage: build
+install:
+  stage: install
   script:
     - npm install
