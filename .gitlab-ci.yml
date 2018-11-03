@@ -7,6 +7,7 @@ variables:
 stages:
   - install
   - test
+  - build
   - deploy
 install_job:
   image: node:10.12.0-jessie
@@ -32,6 +33,21 @@ test_job:
   artifacts:
     reports:
       junit: ./junit.xml
+build_job:
+  image: node:10.12.0-jessie
+  only:
+    - tags
+  stage: build
+  script:
+    - npm run build
+  cache:
+    paths:
+      - node_modules
+      - .build
+  artifacts:
+    name: "$CI_JOB_TOKEN"
+    paths:
+      - .build
 deploy_job:
   image: docker:stable
   services:
