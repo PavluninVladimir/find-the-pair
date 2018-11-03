@@ -9,8 +9,4 @@ describe('Test getImg', () => {
     test('count only integer getImg(\'text\')', () => {
         expect(getImg('text')).toEqual(['count only integer']);
     })
-
-    test('false', () => {
-        expect(true).toEqual(false);
-    })
 })
