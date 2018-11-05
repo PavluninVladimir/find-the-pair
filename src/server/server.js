@@ -5,6 +5,7 @@ import { renderToString } from 'react-dom/server';
 import App from '../app/app'
 import pluginInit from './plugins/pluginsInit';
 import images from './pictures/111.jpg';
+import { logger } from './util/logger';
 const isLocal = process.env.NODE_ENV === 'development';
 const host = isLocal ? 'localhost' : 'localhost'
 const server = Hapi.server({
@@ -33,7 +34,6 @@ const init = async () => {
         method: 'GET',
         path: '/img',
         handler: (request, h) => {
-
             return `<img src="${images}" />`
         }
     });
@@ -49,11 +49,13 @@ const init = async () => {
         }
     });
     await server.start();
-    console.log(`Server running at: ${server.info.uri}`);
+    logger.info(`Server running at: ${server.info.uri}`);
 };
 
 process.on('unhandledRejection', (err) => {
-    console.log(err);
+    logger.error(err);
     process.exit(1);
 });
-init();
+
+init()
+
